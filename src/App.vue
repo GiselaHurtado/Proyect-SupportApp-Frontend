@@ -1,18 +1,24 @@
 <script setup>
 import { RouterLink, RouterView } from 'vue-router'
 import HelloWorld from './components/HelloWorld.vue'
+import NewRequest from './components/NewRequest.vue';
+import RequestList from './components/RequestList.vue';
+import RequestEdit from './components/RequestEdit.vue';
+
 </script>
 
 <template>
   <header>
-    <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
+    <!-- <img alt="Vue logo" class="logo" src="../src/assets/imgs/logo.png" width="125" height="125" /> -->
 
     <div class="wrapper">
-      <HelloWorld msg="You did it!" />
+      <HelloWorld msg="Psychological Support App" />
 
       <nav>
         <RouterLink to="/">Home</RouterLink>
-        <RouterLink to="/about">About</RouterLink>
+        <RouterLink to="/newRequest">New Request</RouterLink>
+        <RouterLink to="/requestList">Request List</RouterLink>
+        <RouterLink to="/requestEdit">Request Edit</RouterLink>
       </nav>
     </div>
   </header>
@@ -22,24 +28,27 @@ import HelloWorld from './components/HelloWorld.vue'
 
 <style scoped>
 header {
-  line-height: 1.5;
+  line-height: 2;
   max-height: 100vh;
+  font-family: 'Poppins', sans-serif;
+  
 }
 
-.logo {
+/* .logo {
   display: block;
   margin: 0 auto 2rem;
-}
+} */
 
 nav {
   width: 100%;
-  font-size: 12px;
+  font-size: 15px;
   text-align: center;
   margin-top: 2rem;
 }
 
 nav a.router-link-exact-active {
   color: var(--color-text);
+  color: #666;
 }
 
 nav a.router-link-exact-active:hover {
@@ -50,10 +59,12 @@ nav a {
   display: inline-block;
   padding: 0 1rem;
   border-left: 1px solid var(--color-border);
+  color: #8e44ad;
 }
 
 nav a:first-of-type {
   border: 0;
+  color: #8e44ad;
 }
 
 @media (min-width: 1024px) {

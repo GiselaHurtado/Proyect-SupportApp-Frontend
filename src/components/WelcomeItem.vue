@@ -1,29 +1,10 @@
+<script setup>
+</script>
 <template>
-  <div class="item">
-    <i>
-      <slot name="icon"></slot>
-    </i>
-    <div class="details">
-      <h3>
-        <slot name="heading"></slot>
-      </h3>
-      <slot></slot>
-    </div>
-  </div>
+  
 </template>
 
 <style scoped>
-.item {
-  margin-top: 2rem;
-  display: flex;
-  position: relative;
-}
-
-.details {
-  flex: 1;
-  margin-left: 1rem;
-}
-
 i {
   display: flex;
   place-items: center;
@@ -31,6 +12,7 @@ i {
   width: 32px;
   height: 32px;
   color: var(--color-text);
+  font-family: 'Poppins', sans-serif;
 }
 
 h3 {
@@ -38,6 +20,7 @@ h3 {
   font-weight: 500;
   margin-bottom: 0.4rem;
   color: var(--color-heading);
+  font-family: 'Poppins', sans-serif;
 }
 
 @media (min-width: 1024px) {
