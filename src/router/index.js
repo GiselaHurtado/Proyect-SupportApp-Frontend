@@ -1,5 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
+import NewRequest from '../components/NewRequest.vue'
+import RequestList from '../components/RequestList.vue'
+import RequestEdit from '../components/RequestEdit.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),

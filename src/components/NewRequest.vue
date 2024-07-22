@@ -1,52 +1,96 @@
-<script></script>
+<script setup>
+import { ref, reactive } from 'vue';
+import { useStore } from 'vuex'; 
+
+const store = useStore();
+
+const requestForm = reactive({
+  date: '',
+  firstName: '',
+  lastName: '',
+  title: '',
+  request: ''
+});
+
+const titleOptions = [
+  'First Interview',
+  'Treatment',
+  'Anxiety',
+  'Stress',
+  'Others'
+];
+
+const submitForm = () => {
+  if (isFormValid()) {
+    const newRequest = {
+      id: Date.now(), // Generamos un ID único
+      ...requestForm
+    };
+    
+    // Dispatch una acción de Vuex para agregar la nueva solicitud
+    store.dispatch('addRequest', newRequest);
+    
+    // Limpiar el formulario
+    Object.keys(requestForm).forEach(key => requestForm[key] = '');
+    
+    // Opcionalmente, mostrar un mensaje de éxito
+    alert('Request submitted successfully!');
+  } else {
+    alert('Please fill all fields before submitting.');
+  }
+};
+
+const isFormValid = () => {
+  return Object.values(requestForm).every(value => value.trim() !== '');
+};
+</script>
+
 <template>
-<div class="container rounded shadow-sm">
-    <form action="">
-        <div class="row">
-            <div class="col-md-6 col-12 mb-4">
-                <div class="form-control d-flex flex-column">
-                    <p class="h-blue">Request Date:</p>
-                    <input class="inputbox textmuted" type="date">
-                </div>
-            </div>
+  <div class="container rounded shadow-sm">
+    <form @submit.prevent="submitForm">
+      <div class="row">
+        <div class="col-md-6 col-12 mb-4">
+          <div class="form-control d-flex flex-column">
+            <p class="h-blue">Request Date:</p>
+            <input class="inputbox textmuted" type="date" v-model="requestForm.date">
+          </div>
         </div>
-        <div class="row">
-            <div class="col-md-6 col-12 mb-4">
-                <div class="form-control d-flex flex-column">
-                    <p class="h-blue">Applicant's Name:</p>
-                    <input class="inputbox" placeholder="First Name" type="text">
-                </div>
-            </div>
-            <div class="col-md-6 col-12 mb-4">
-                <div class="form-control d-flex flex-column">
-                    <p class="h-blue">Last Name:</p>
-                    <input class="inputbox" placeholder="Surname" type="text">
-                </div>
-            </div>
+      </div>
+      <div class="row">
+        <div class="col-md-6 col-12 mb-4">
+          <div class="form-control d-flex flex-column">
+            <p class="h-blue">Applicant's Name:</p>
+            <input class="inputbox" placeholder="First Name" type="text" v-model="requestForm.firstName">
+          </div>
         </div>
-        <div class="row">
-            <div class="col-md-12 mb-4">
-                <div class="form-control d-flex flex-column">
-                    <p class="h-blue">Title of The Request:</p>
-                    <select class="inputbox">
-                        <option value="option1">First Interview</option>
-                        <option value="option2">Treatment</option>
-                        <option value="option3">Anxiety</option>
-                        <option value="option4">Stress</option>
-                        <option value="option5">Others</option>
-                    </select>
-                </div>
-            </div>
-            <div class="col-md-12 mb-4">
-                <div class="form-control d-flex flex-column">
-                    <p class="h-blue">Request:</p>
-                    <textarea class="inputbox" placeholder="Write your request here" maxlength="2000"></textarea>
-                </div>
-            </div>
+        <div class="col-md-6 col-12 mb-4">
+          <div class="form-control d-flex flex-column">
+            <p class="h-blue">Last Name:</p>
+            <input class="inputbox" placeholder="Surname" type="text" v-model="requestForm.lastName">
+          </div>
         </div>
-        <div class="btn btn-primary form-control text-center">Submit</div>
+      </div>
+      <div class="row">
+        <div class="col-md-12 mb-4">
+          <div class="form-control d-flex flex-column">
+            <p class="h-blue">Title of The Request:</p>
+            <select class="inputbox" v-model="requestForm.title">
+              <option v-for="option in titleOptions" :key="option" :value="option">
+                {{ option }}
+              </option>
+            </select>
+          </div>
+        </div>
+        <div class="col-md-12 mb-4">
+          <div class="form-control d-flex flex-column">
+            <p class="h-blue">Request:</p>
+            <textarea class="inputbox" placeholder="Write your request here" maxlength="2000" v-model="requestForm.request"></textarea>
+          </div>
+        </div>
+      </div>
+      <button type="submit" class="btn btn-primary form-control text-center">Submit</button>
     </form>
-</div>
+  </div>
 </template>
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap');
