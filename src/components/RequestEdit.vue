@@ -1,55 +1,76 @@
-<script></script>
+<script setup>
+import { ref, onMounted, computed } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
+import { useStore } from 'vuex'
+
+const store = useStore()
+const router = useRouter()
+const route = useRoute()
+
+const id = computed(() => route.params.id)
+const request = ref(null)
+const editedRequest = ref({})
+
+onMounted(() => {
+  request.value = store.getters.getRequestById(Number(id.value))
+  if (request.value) {
+    editedRequest.value = { ...request.value }
+  }
+})
+
+const updateRequest = () => {
+  store.dispatch('updateRequest', editedRequest.value)
+  router.push('/requestList')
+}
+</script>
+
 <template>
-    <!-- <div class="requestedit">
-   <h2> Edit Your Request:</h2> 
-  </div> -->
-<div class="container rounded shadow-sm">
-    <form action="">
-        <div class="row">
-            <div class="col-md-6 col-12 mb-4">
-                <div class="form-control d-flex flex-column">
-                    <p class="h-blue">Request Date:</p>
-                    <input class="inputbox textmuted" type="date">
-                </div>
-            </div>
+  <div class="container rounded shadow-sm">
+    <form @submit.prevent="updateRequest">
+      <div class="row">
+        <div class="col-md-6 col-12 mb-4">
+          <div class="form-control d-flex flex-column">
+            <p class="h-blue">Request Date:</p>
+            <input class="inputbox textmuted" type="date" v-model="editedRequest.date">
+          </div>
         </div>
-        <div class="row">
-            <div class="col-md-6 col-12 mb-4">
-                <div class="form-control d-flex flex-column">
-                    <p class="h-blue">Applicant's Name:</p>
-                    <input class="inputbox" placeholder="First Name" type="text">
-                </div>
-            </div>
-            <div class="col-md-6 col-12 mb-4">
-                <div class="form-control d-flex flex-column">
-                    <p class="h-blue">Last Name:</p>
-                    <input class="inputbox" placeholder="Surname" type="text">
-                </div>
-            </div>
+      </div>
+      <div class="row">
+        <div class="col-md-6 col-12 mb-4">
+          <div class="form-control d-flex flex-column">
+            <p class="h-blue">Applicant's Name:</p>
+            <input class="inputbox" placeholder="First Name" type="text" v-model="editedRequest.firstName">
+          </div>
         </div>
-        <div class="row">
-            <div class="col-md-12 mb-4">
-                <div class="form-control d-flex flex-column">
-                    <p class="h-blue">Title of The Request:</p>
-                    <select class="inputbox">
-                        <option value="option1">Option 1</option>
-                        <option value="option2">Option 2</option>
-                        <option value="option3">Option 3</option>
-                        <option value="option4">Option 4</option>
-                    </select>
-                </div>
-            </div>
-            <div class="col-md-12 mb-4">
-                <div class="form-control d-flex flex-column">
-                    <p class="h-blue">Request:</p>
-                    <textarea class="inputbox" placeholder="Write your request here" maxlength="2000"></textarea>
-                </div>
-            </div>
+        <div class="col-md-6 col-12 mb-4">
+          <div class="form-control d-flex flex-column">
+            <p class="h-blue">Last Name:</p>
+            <input class="inputbox" placeholder="Surname" type="text" v-model="editedRequest.lastName">
+          </div>
         </div>
-        <div class="btn btn-primary form-control text-center">Edit</div>
+      </div>
+      <div class="row">
+        <div class="col-md-12 mb-4">
+          <div class="form-control d-flex flex-column">
+            <p class="h-blue">Title of The Request:</p>
+            <input class="inputbox" placeholder="Request Title" type="text" v-model="editedRequest.title">
+          </div>
+        </div>
+        <div class="col-md-12 mb-4">
+          <div class="form-control d-flex flex-column">
+            <p class="h-blue">Request:</p>
+            <textarea class="inputbox" placeholder="Write your request here" maxlength="2000" v-model="editedRequest.content"></textarea>
+          </div>
+        </div>
+      </div>
+      <button type="submit" class="btn btn-primary form-control text-center">Edit</button>
     </form>
-</div>
+  </div>
 </template>
+
+
+
+
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap');
 

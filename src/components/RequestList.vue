@@ -1,17 +1,28 @@
 <script setup>
-import { computed, ref } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { useStore } from 'vuex'
+import { useRouter } from 'vue-router'
 
 const store = useStore()
-const requests = ref(computed(() => {
-  const allRequests = store.getters.getAllRequests || []
-  // Asignamos IDs secuenciales y estado 'active' a todas las solicitudes
-  return allRequests.map((request, index) => ({
+const router = useRouter()
+
+const requests = ref([])
+
+const fetchRequests = () => {
+  requests.value = store.getters.getAllRequests.map((request, index) => ({
     ...request,
     id: index + 1,
     status: 'active'
   }))
-}))
+}
+
+watch(
+  () => store.getters.getAllRequests,
+  () => {
+    fetchRequests()
+  },
+  { immediate: true }
+)
 
 const selectedRequestIds = ref([])
 
@@ -50,67 +61,73 @@ const getStatusClass = (status) => {
 
 const handleAction = (action, request, event) => {
   event.preventDefault()
-  // Implementar lógica para cada acción
-  console.log(`Action ${action} for request ${request.id}`)
+  if (action === 'edit') {
+    router.push({ name: 'requestedit', params: { id: request.id } })
+  } else {
+    console.log(`Action ${action} for request ${request.id}`)
+  }
 }
 </script>
 
 <template>
-<div class="bg-custom">
+  <div class="bg-custom">
     <div class="card">
-        <div class="card-body">
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th class="col checkbox">
-                            <input type="checkbox" id="selectAll" v-model="selectAll" @change="toggleAllSelection">
-                        </th>
-                        <th scope="col" class="id">Id</th>
-                        <th scope="col" class="username">Username</th>
-                        <th scope="col" class="designation">Title Request</th>
-                        <th scope="col" class="status">Status</th>
-                        <th scope="col" class="action">Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="request in requests" :key="request.id" style="height:70px">
-                        <td class="col-auto">
-                            <input type="checkbox" :id="'select' + request.id" 
-                                   :checked="isSelected(request.id)" 
-                                   @change="selectAll = false; $event.target.checked ? selectedRequestIds.push(request.id) : selectedRequestIds.splice(selectedRequestIds.indexOf(request.id), 1)">
-                        </td>
-                        <td class="id">{{ request.id }}</td>
-                        <td class="username">
-                            <img src="https://svgshare.com/i/16Gq.svg" alt="Avatar" class="user-avatar">
-                            {{ request.firstName }} {{ request.lastName }}
-                        </td>
-                        <td class="designation">{{ request.title }}</td>
-                        <td class="status">
-                            <button class="btn btn status-button" :class="getStatusClass(request.status)">
-                                {{ request.status }}
-                            </button>
-                        </td>
-                        <td class="action">
-                            <div class="dropdown">
-                                <button class="btn btn-white dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-three-dots-vertical" viewBox="0 0 16 16">
-                                        <path d="M8 12a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm0-5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm0-5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3z"/>
-                                    </svg>
-                                </button>
-                                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-                                    <li><a class="dropdown-item" href="#" @click="handleAction('edit', request, $event)">Edit</a></li>
-                                    <li><a class="dropdown-item" href="#" @click="handleAction('delete', request, $event)">Delete</a></li>
-                                    <li><a class="dropdown-item" href="#" @click="handleAction('close', request, $event)">Close</a></li>
-                                </ul>
-                            </div>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
+      <div class="card-body">
+        <table class="table">
+          <thead>
+            <tr>
+              <th class="col checkbox">
+                <input type="checkbox" id="selectAll" v-model="selectAll" @change="toggleAllSelection">
+              </th>
+              <th scope="col" class="id">Id</th>
+              <th scope="col" class="username">Username</th>
+              <th scope="col" class="designation">Title Request</th>
+              <th scope="col" class="status">Status</th>
+              <th scope="col" class="action">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="request in requests" :key="request.id" style="height:70px">
+              <td class="col-auto">
+                <input type="checkbox" :id="'select' + request.id" 
+                       :checked="isSelected(request.id)" 
+                       @change="selectAll = false; $event.target.checked ? selectedRequestIds.push(request.id) : selectedRequestIds.splice(selectedRequestIds.indexOf(request.id), 1)">
+              </td>
+              <td class="id">{{ request.id }}</td>
+              <td class="username">
+                <img src="https://svgshare.com/i/16Gq.svg" alt="Avatar" class="user-avatar">
+                {{ request.firstName }} {{ request.lastName }}
+              </td>
+              <td class="designation">{{ request.title }}</td>
+              <td class="status">
+                <button class="btn btn status-button" :class="getStatusClass(request.status)">
+                  {{ request.status }}
+                </button>
+              </td>
+              <td class="action">
+                <div class="dropdown">
+                  <button class="btn btn-white dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-three-dots-vertical" viewBox="0 0 16 16">
+                      <path d="M8 12a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm0-5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm0-5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3z"/>
+                    </svg>
+                  </button>
+                  <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                    <li><a class="dropdown-item" href="#" @click="handleAction('edit', request, $event)">Edit</a></li>
+                    <li><a class="dropdown-item" href="#" @click="handleAction('delete', request, $event)">Delete</a></li>
+                    <li><a class="dropdown-item" href="#" @click="handleAction('close', request, $event)">Close</a></li>
+                  </ul>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
-</div>
+  </div>
 </template>
+
+
+
 
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap');
