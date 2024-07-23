@@ -14,7 +14,14 @@ const requestForm = reactive({
   requestContent: ''
 });
 
-
+const resetForm = () => {
+  requestForm.dateRequest = '';
+  requestForm.firstName = '';
+  requestForm.lastName = '';
+  requestForm.titleRequest = '';
+  requestForm.requestContent = '';
+  
+};
 
 const submitForm = async () => {
   const url = 'http://localhost:8080/api/v1/requests';
@@ -39,12 +46,17 @@ const submitForm = async () => {
       throw new Error(`HTTP error! status: ${response.status}`);
     } else {
       alert('Request created successfully');
-      router.push('/request');
+      resetForm();
+      router.push('/newRequest');
     }
   } catch (error) {
     alert(`Fetch error: ${error}`);
   }
 };
+
+
+
+
 </script>
 
 <template>

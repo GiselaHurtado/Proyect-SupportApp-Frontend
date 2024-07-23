@@ -58,12 +58,24 @@ const getStatusClass = (status) => {
   }
 }
 
-const handleAction = (action, request, event) => {
+const handleAction = async (action, request, event) => {
   event.preventDefault()
+  const requestId = request.id
+
+  console.log(`Handling action: ${action} for request ${requestId}`)
+  
   if (action === 'edit') {
-    router.push({ name: 'requestedit', params: { id: request.id } })
+    try {
+      await router.push({ 
+        name: 'requestedit', 
+        params: { id: requestId.toString() } 
+      })
+      console.log(`Navigated to edit page for request ${requestId}`)
+    } catch (error) {
+      console.error('Error navigating to edit page:', error)
+    }
   } else {
-    console.log(`Action ${action} for request ${request.id}`)
+    console.log(`Action ${action} for request ${requestId}`)
   }
 }
 </script>

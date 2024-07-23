@@ -47,7 +47,7 @@ export const useRequestStore = defineStore('request', () => {
     }
   }
 
-  async function updateRequest(updatedRequest) {
+  async function updateRequest(id, updatedRequest) {
     try {
       isLoading.value = true;
       error.value = null;

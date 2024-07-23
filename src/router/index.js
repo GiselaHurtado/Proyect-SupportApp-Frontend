@@ -23,11 +23,11 @@ const routes = [
     component: () => import('../views/RequestListView.vue')
   },
   {
-    path: '/requestEdit',
-    name: 'RequestEdit',
-     component: () => import('../views/RequestEditView.vue')
-    
-  }
+    path: '/requestEdit/:id',
+    name: 'requestedit',
+    component: RequestEdit,
+    props: true
+  },
 ]
 
 const router = createRouter({
