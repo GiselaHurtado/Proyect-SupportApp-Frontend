@@ -2,6 +2,9 @@ import { ref } from 'vue';
 import { defineStore } from 'pinia';
 import axios from 'axios';
 
+// Configurar Axios para incluir credenciales
+axios.defaults.withCredentials = true;
+
 export const useRequestStore = defineStore('request', () => {
   const uri = import.meta.env.VITE_API_ENDPOINT_REQUEST;
   const requests = ref([]);
@@ -9,11 +12,13 @@ export const useRequestStore = defineStore('request', () => {
   const error = ref(null);
 
   async function fetchRequests() {
+    if (isLoading.value || requests.value.length > 0) return; // Previene llamadas repetidas
+
     try {
       isLoading.value = true;
       error.value = null;
-      console.log(`Fetching requests from ${uri}`);
-      const response = await axios.get(`${uri}`);
+      console.log(`Fetching requests from ${uri}/all`);
+      const response = await axios.get(`${uri}/all`);
       console.log('Fetched requests:', response.data);
       requests.value = response.data;
     } catch (err) {
@@ -38,7 +43,7 @@ export const useRequestStore = defineStore('request', () => {
       error.value = 'Error adding request: ' + err.message;
       throw err;
     } finally {
-      isLoading.value = false;
+      isLoading.value = false; // Mover esta línea aquí para asegurar que isLoading se actualice correctamente
     }
   }
 
@@ -62,9 +67,9 @@ export const useRequestStore = defineStore('request', () => {
     }
   }
 
-  function getRequestById(id) {
+  const getRequestById = (id) => {
     return requests.value.find(request => request.id === id);
-  }
+  };
 
   return { 
     requests, 
@@ -76,3 +81,4 @@ export const useRequestStore = defineStore('request', () => {
     getRequestById 
   };
 });
+

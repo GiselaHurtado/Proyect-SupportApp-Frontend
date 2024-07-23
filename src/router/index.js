@@ -2,6 +2,9 @@ import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import RequestList from '../components/RequestList.vue'
 import RequestEdit from '../components/RequestEdit.vue'
+import RequestEditView from '../views/RequestEditView.vue'
+import RequestListView from '../views/RequestListView.vue'
+
 
 const routes = [
   {
@@ -16,14 +19,14 @@ const routes = [
   },
   {
     path: '/requestList',
-    name: 'requestlist',
+    name: 'requestList',
     component: () => import('../views/RequestListView.vue')
   },
   {
-    path: '/requestEdit/:id',
-    name: 'requestedit',
-    component: RequestEdit,
-    props: true
+    path: '/requestEdit',
+    name: 'RequestEdit',
+     component: () => import('../views/RequestEditView.vue')
+    
   }
 ]
 

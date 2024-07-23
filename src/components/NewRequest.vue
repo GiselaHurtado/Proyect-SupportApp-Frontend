@@ -14,13 +14,7 @@ const requestForm = reactive({
   requestContent: ''
 });
 
-const titleOptions = [
-  'First Interview',
-  'Treatment',
-  'Anxiety',
-  'Stress',
-  'Others'
-];
+
 
 const submitForm = async () => {
   const url = 'http://localhost:8080/api/v1/requests';
@@ -82,11 +76,7 @@ const submitForm = async () => {
         <div class="col-md-12 mb-4">
           <div class="form-control d-flex flex-column">
             <p class="h-blue">Title of The Request:</p>
-            <select class="inputbox" v-model="requestForm.titleRequest">
-              <option v-for="option in titleOptions" :key="option" :value="option">
-                {{ option }}
-              </option>
-            </select>
+            <input class="inputbox" placeholder="Enter title" type="text" v-model="requestForm.titleRequest">
           </div>
         </div>
         <div class="col-md-12 mb-4">

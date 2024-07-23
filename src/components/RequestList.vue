@@ -97,7 +97,7 @@ const handleAction = (action, request, event) => {
                 <img src="https://svgshare.com/i/16Gq.svg" alt="Avatar" class="user-avatar">
                 {{ request.firstName }} {{ request.lastName }}
               </td>
-              <td class="designation">{{ request.title }}</td>
+              <td class="designation">{{ request.titleRequest }}</td>
               <td class="status">
                 <button class="btn btn status-button" :class="getStatusClass(request.status)">
                   {{ request.status }}

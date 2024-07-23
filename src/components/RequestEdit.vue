@@ -1,7 +1,7 @@
-
 <script setup>
 import { ref, onMounted, computed } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
+import axios from 'axios';
 import { useRequestStore } from '../stores/supportap.js';
 
 const requestStore = useRequestStore();
@@ -12,9 +12,9 @@ const id = computed(() => route.params.id);
 const request = ref(null);
 const editedRequest = ref({});
 
-onMounted(() => {
-  const requestId = Number(id.value);
-  request.value = requestStore.getRequestById(requestId);
+onMounted(async () => {
+  const requestId = id.value;
+  request.value = await requestStore.getRequestById(requestId);
   if (request.value) {
     editedRequest.value = { ...request.value };
   }
@@ -22,13 +22,18 @@ onMounted(() => {
 
 const updateRequest = async () => {
   try {
-    await requestStore.updateRequest(editedRequest.value);
+    const response = await axios.put(`http://localhost:8080/api/v1/requests/${id.value}`, editedRequest.value, {
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
     alert('Request updated successfully!');
     router.push('/requests');
   } catch (error) {
     alert('Error updating request: ' + error.message);
   }
 };
+
 </script>
 
 <template>
@@ -74,6 +79,7 @@ const updateRequest = async () => {
     </form>
   </div>
 </template>
+
 
 
 
