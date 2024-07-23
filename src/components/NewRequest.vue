@@ -1,15 +1,17 @@
-<script setup>
-import { ref, reactive } from 'vue';
-import { useStore } from 'vuex'; 
 
-const store = useStore();
+
+<script setup>
+import { reactive } from 'vue';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
 
 const requestForm = reactive({
-  date: '',
+  dateRequest: '',
   firstName: '',
   lastName: '',
-  title: '',
-  request: ''
+  titleRequest: '',
+  requestContent: ''
 });
 
 const titleOptions = [
@@ -20,28 +22,34 @@ const titleOptions = [
   'Others'
 ];
 
-const submitForm = () => {
-  if (isFormValid()) {
-    const newRequest = {
-      id: Date.now(), // Generamos un ID único
-      ...requestForm
-    };
-    
-    // Dispatch una acción de Vuex para agregar la nueva solicitud
-    store.dispatch('addRequest', newRequest);
-    
-    // Limpiar el formulario
-    Object.keys(requestForm).forEach(key => requestForm[key] = '');
-    
-    // Opcionalmente, mostrar un mensaje de éxito
-    alert('Request submitted successfully!');
-  } else {
-    alert('Please fill all fields before submitting.');
-  }
-};
+const submitForm = async () => {
+  const url = 'http://localhost:8080/api/v1/requests';
+  const data = {
+    titleRequest: requestForm.titleRequest,
+    requestContent: requestForm.requestContent,
+    firstName: requestForm.firstName,
+    lastName: requestForm.lastName,
+    dateRequest: requestForm.dateRequest
+  };
 
-const isFormValid = () => {
-  return Object.values(requestForm).every(value => value.trim() !== '');
+  try {
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    } else {
+      alert('Request created successfully');
+      router.push('/request');
+    }
+  } catch (error) {
+    alert(`Fetch error: ${error}`);
+  }
 };
 </script>
 
@@ -52,7 +60,7 @@ const isFormValid = () => {
         <div class="col-md-6 col-12 mb-4">
           <div class="form-control d-flex flex-column">
             <p class="h-blue">Request Date:</p>
-            <input class="inputbox textmuted" type="date" v-model="requestForm.date">
+            <input class="inputbox textmuted" type="date" v-model="requestForm.dateRequest">
           </div>
         </div>
       </div>
@@ -74,7 +82,7 @@ const isFormValid = () => {
         <div class="col-md-12 mb-4">
           <div class="form-control d-flex flex-column">
             <p class="h-blue">Title of The Request:</p>
-            <select class="inputbox" v-model="requestForm.title">
+            <select class="inputbox" v-model="requestForm.titleRequest">
               <option v-for="option in titleOptions" :key="option" :value="option">
                 {{ option }}
               </option>
@@ -84,7 +92,7 @@ const isFormValid = () => {
         <div class="col-md-12 mb-4">
           <div class="form-control d-flex flex-column">
             <p class="h-blue">Request:</p>
-            <textarea class="inputbox" placeholder="Write your request here" maxlength="2000" v-model="requestForm.request"></textarea>
+            <textarea class="inputbox" placeholder="Write your request here" maxlength="2000" v-model="requestForm.requestContent"></textarea>
           </div>
         </div>
       </div>
@@ -92,6 +100,9 @@ const isFormValid = () => {
     </form>
   </div>
 </template>
+
+
+
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap');
 

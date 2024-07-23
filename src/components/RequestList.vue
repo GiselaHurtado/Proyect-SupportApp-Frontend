@@ -1,28 +1,27 @@
 <script setup>
-import { ref, computed, watch } from 'vue'
-import { useStore } from 'vuex'
+import { ref, computed, watch, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { useRequestStore } from '../stores/supportap.js'
 
-const store = useStore()
 const router = useRouter()
+const requestStore = useRequestStore()
 
 const requests = ref([])
 
-const fetchRequests = () => {
-  requests.value = store.getters.getAllRequests.map((request, index) => ({
+const fetchRequests = async () => {
+  await requestStore.fetchRequests()
+  requests.value = requestStore.requests.map((request, index) => ({
     ...request,
-    id: index + 1,
-    status: 'active'
+    id: request.id || index + 1,
+    status: request.status || 'active'
   }))
 }
 
-watch(
-  () => store.getters.getAllRequests,
-  () => {
-    fetchRequests()
-  },
-  { immediate: true }
-)
+onMounted(() => {
+  fetchRequests()
+})
+
+watch(() => requestStore.requests, fetchRequests, { deep: true })
 
 const selectedRequestIds = ref([])
 

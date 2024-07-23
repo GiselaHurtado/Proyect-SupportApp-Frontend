@@ -1,27 +1,34 @@
+
 <script setup>
-import { ref, onMounted, computed } from 'vue'
-import { useRouter, useRoute } from 'vue-router'
-import { useStore } from 'vuex'
+import { ref, onMounted, computed } from 'vue';
+import { useRouter, useRoute } from 'vue-router';
+import { useRequestStore } from '../stores/supportap.js';
 
-const store = useStore()
-const router = useRouter()
-const route = useRoute()
+const requestStore = useRequestStore();
+const router = useRouter();
+const route = useRoute();
 
-const id = computed(() => route.params.id)
-const request = ref(null)
-const editedRequest = ref({})
+const id = computed(() => route.params.id);
+const request = ref(null);
+const editedRequest = ref({});
 
 onMounted(() => {
-  request.value = store.getters.getRequestById(Number(id.value))
+  const requestId = Number(id.value);
+  request.value = requestStore.getRequestById(requestId);
   if (request.value) {
-    editedRequest.value = { ...request.value }
+    editedRequest.value = { ...request.value };
   }
-})
+});
 
-const updateRequest = () => {
-  store.dispatch('updateRequest', editedRequest.value)
-  router.push('/requestList')
-}
+const updateRequest = async () => {
+  try {
+    await requestStore.updateRequest(editedRequest.value);
+    alert('Request updated successfully!');
+    router.push('/requests');
+  } catch (error) {
+    alert('Error updating request: ' + error.message);
+  }
+};
 </script>
 
 <template>
@@ -31,7 +38,7 @@ const updateRequest = () => {
         <div class="col-md-6 col-12 mb-4">
           <div class="form-control d-flex flex-column">
             <p class="h-blue">Request Date:</p>
-            <input class="inputbox textmuted" type="date" v-model="editedRequest.date">
+            <input class="inputbox textmuted" type="date" v-model="editedRequest.dateRequest">
           </div>
         </div>
       </div>
@@ -53,13 +60,13 @@ const updateRequest = () => {
         <div class="col-md-12 mb-4">
           <div class="form-control d-flex flex-column">
             <p class="h-blue">Title of The Request:</p>
-            <input class="inputbox" placeholder="Request Title" type="text" v-model="editedRequest.title">
+            <input class="inputbox" placeholder="Request Title" type="text" v-model="editedRequest.titleRequest">
           </div>
         </div>
         <div class="col-md-12 mb-4">
           <div class="form-control d-flex flex-column">
             <p class="h-blue">Request:</p>
-            <textarea class="inputbox" placeholder="Write your request here" maxlength="2000" v-model="editedRequest.content"></textarea>
+            <textarea class="inputbox" placeholder="Write your request here" maxlength="2000" v-model="editedRequest.requestContent"></textarea>
           </div>
         </div>
       </div>
@@ -67,6 +74,9 @@ const updateRequest = () => {
     </form>
   </div>
 </template>
+
+
+
 
 
 
