@@ -4,9 +4,9 @@
 import { reactive } from 'vue';
 import { useRouter } from 'vue-router';
 
-const router = useRouter();
+ const router = useRouter();
 
-const requestForm = reactive({
+ const requestForm = reactive({
   dateRequest: '',
   firstName: '',
   lastName: '',
@@ -14,7 +14,7 @@ const requestForm = reactive({
   requestContent: ''
 });
 
-const resetForm = () => {
+ const resetForm = () => {
   requestForm.dateRequest = '';
   requestForm.firstName = '';
   requestForm.lastName = '';
