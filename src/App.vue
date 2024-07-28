@@ -12,7 +12,8 @@ import RequestEdit from './components/RequestEdit.vue';
     <!-- <img alt="Vue logo" class="logo" src="../src/assets/imgs/logo.png" width="125" height="125" /> -->
 
     <div class="wrapper">
-      <HelloWorld msg="Psychological Support App" />
+      <HelloWorld msg="Psychological Treatment" />
+      <h2>Book your appointment</h2>
 
       <nav>
         <RouterLink to="/">Home</RouterLink>
@@ -32,6 +33,11 @@ header {
   max-height: 100vh;
   font-family: 'Poppins', sans-serif;
   
+}
+h2{
+  color:#8e44ad;
+  text-align: center;
+  font-size: medium;
 }
 
 /* .logo {
