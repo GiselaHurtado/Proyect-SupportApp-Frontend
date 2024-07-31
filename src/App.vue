@@ -9,7 +9,7 @@ import RequestEdit from './components/RequestEdit.vue';
 
 <template>
   <header>
-    <!-- <img alt="Vue logo" class="logo" src="../src/assets/imgs/logo.png" width="125" height="125" /> -->
+    
 
     <div class="wrapper">
       <HelloWorld msg="Psychological Treatment" />
