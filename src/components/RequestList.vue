@@ -49,7 +49,7 @@ const isSelected = (requestId) => {
 }
 
 const getStatusClass = (status) => {
-  if (!status) return 'bu2' // Valor por defecto si status es undefined o null
+  if (!status) return 'bu2' 
   
   switch(status.toLowerCase()) {
     case 'active': return 'bu'
@@ -77,7 +77,10 @@ const handleAction = async (action, request, event) => {
   } else {
     console.log(`Action ${action} for request ${requestId}`)
   }
+
 }
+
+
 </script>
 
 <template>
