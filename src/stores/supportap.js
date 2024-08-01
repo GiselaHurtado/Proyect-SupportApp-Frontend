@@ -2,7 +2,7 @@ import { ref } from 'vue';
 import { defineStore } from 'pinia';
 import axios from 'axios';
 
-// Configurar Axios para incluir credenciales
+
 axios.defaults.withCredentials = true;
 
 export const useRequestStore = defineStore('request', () => {
@@ -12,8 +12,7 @@ export const useRequestStore = defineStore('request', () => {
   const error = ref(null);
 
   async function fetchRequests() {
-    if (isLoading.value || requests.value.length > 0) return; // Previene llamadas repetidas
-
+    if (isLoading.value || requests.value.length > 0) return; 
     try {
       isLoading.value = true;
       error.value = null;
@@ -43,7 +42,7 @@ export const useRequestStore = defineStore('request', () => {
       error.value = 'Error adding request: ' + err.message;
       throw err;
     } finally {
-      isLoading.value = false; // Mover esta línea aquí para asegurar que isLoading se actualice correctamente
+      isLoading.value = false; 
     }
   }
 
