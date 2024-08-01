@@ -1,30 +1,96 @@
 <script setup>
+import { ref } from 'vue';
+import { useRouter } from 'vue-router'; 
 
+const router = useRouter();
+
+const userName = ref('');
+const password = ref('');
+const error = ref(false);
+const errorMsg = ref('');
+const isLoading = ref(false);
+
+const handleSubmit = async (event) => {
+    event.preventDefault();
+    if (!userName.value || !password.value) {
+        error.value = true;
+        errorMsg.value = 'Por favor, ingresa usuario y contraseña.';
+        return;
+    }
+    await login();
+};
+
+const login = async () => {
+    isLoading.value = true;
+    error.value = false;
+    errorMsg.value = '';
+
+    try {
+        // Simulación de una llamada a API
+        const response = await simulateApiCall(userName.value, password.value);
+        
+        if (response.success) {
+            // Login exitoso
+            console.log('Login exitoso');
+            // Aquí puedes guardar el token en el almacenamiento local si es necesario
+            // localStorage.setItem('token', response.token);
+            router.push('/dashboard'); // Redirige al dashboard o página principal
+        } else {
+            throw new Error(response.message);
+        }
+    } catch (err) {
+        error.value = true;
+        errorMsg.value = err.message || 'Error en el inicio de sesión. Por favor, intenta de nuevo.';
+    } finally {
+        isLoading.value = false;
+    }
+};
+
+// Función para simular una llamada a API
+const simulateApiCall = (username, password) => {
+    return new Promise((resolve) => {
+        setTimeout(() => {
+            if (username === 'admin' && password === 'password') {
+                resolve({ success: true, token: 'fake_token_123' });
+            } else {
+                resolve({ success: false, message: 'Credenciales inválidas' });
+            }
+        }, 1000); 
+    });
+};
 </script>
+
 <template>
 <div class="wrapper">
-        <div class="logo">
-            <img src='../assets/imgs/logo.png' alt="">
-        </div>
-        <div class="text-center mt-4 name">
-            PsYkela
-        </div>
-        <form class="p-3 mt-3">
-            <div class="form-field d-flex align-items-center">
-                <span class="far fa-user"></span>
-                <input type="text" name="userName" id="userName" placeholder="Username">
-            </div>
-            <div class="form-field d-flex align-items-center">
-                <span class="fas fa-key"></span>
-                <input type="password" name="password" id="pwd" placeholder="Password">
-            </div>
-            <button class="btn mt-3">Login</button>
-        </form>
-        <div class="text-center fs-6">
-            <a href="#">Forget password?</a> or <a href="#">Sign up</a>
-        </div>
+    <div class="logo">
+        <img src='../assets/imgs/logo.png' alt="Logo">
     </div>
+    <div class="text-center mt-4 name">
+        PsYkela
+    </div>
+    <form @submit="handleSubmit" class="p-3 mt-3">
+        <div class="form-field d-flex align-items-center">
+            <span class="far fa-user"></span>
+            <input type="text" name="userName" id="userName" placeholder="Username" v-model="userName" :disabled="isLoading">
+        </div>
+        <div class="form-field d-flex align-items-center">
+            <span class="fas fa-key"></span>
+            <input type="password" name="password" id="pwd" placeholder="Password" v-model="password" :disabled="isLoading">
+        </div>
+        <button type="submit" class="btn mt-3" :disabled="isLoading">
+            {{ isLoading ? 'Cargando...' : 'Login' }}
+        </button>
+    </form>
+    <div v-if="error" class="error-message mt-3 text-center text-danger">
+        {{ errorMsg }}
+    </div>
+    <div class="text-center fs-6 mt-3">
+        <a href="#">¿Olvidaste tu contraseña?</a> o <a href="#">Registrarse</a>
+    </div>
+</div>
 </template>
+
+
 <style scoped>
 /* Importing fonts from Google */
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap');

@@ -1,159 +1,148 @@
 <script setup>
+import { ref, computed, watch, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
+import { useRequestStore } from '../stores/supportap.js'
+
+const router = useRouter()
+const requestStore = useRequestStore()
+
+const requests = ref([])
+
+const fetchRequests = async () => {
+  await requestStore.fetchRequests()
+  requests.value = requestStore.requests.map((request, index) => ({
+    ...request,
+    id: request.id || index + 1,
+    status: request.status || 'active'
+  }))
+}
+
+onMounted(() => {
+  fetchRequests()
+})
+
+watch(() => requestStore.requests, fetchRequests, { deep: true })
+
+const selectedRequestIds = ref([])
+
+const selectAll = computed({
+  get: () => selectedRequestIds.value.length === requests.value.length,
+  set: (value) => {
+    if (value) {
+      selectedRequestIds.value = requests.value.map(request => request.id)
+    } else {
+      selectedRequestIds.value = []
+    }
+  }
+})
+
+const toggleAllSelection = () => {
+  if (selectedRequestIds.value.length === requests.value.length) {
+    selectedRequestIds.value = []
+  } else {
+    selectedRequestIds.value = requests.value.map(request => request.id)
+  }
+}
+
+const isSelected = (requestId) => {
+  return selectedRequestIds.value.includes(requestId)
+}
+
+const getStatusClass = (status) => {
+  if (!status) return 'bu2' 
+  
+  switch(status.toLowerCase()) {
+    case 'active': return 'bu'
+    case 'closed': return 'bu4'
+    default: return 'bu2'
+  }
+}
+
+const handleAction = async (action, request, event) => {
+  event.preventDefault()
+  const requestId = request.id
+
+  console.log(`Handling action: ${action} for request ${requestId}`)
+  
+  if (action === 'edit') {
+    try {
+      await router.push({ 
+        name: 'requestedit', 
+        params: { id: requestId.toString() } 
+      })
+      console.log(`Navigated to edit page for request ${requestId}`)
+    } catch (error) {
+      console.error('Error navigating to edit page:', error)
+    }
+  } else {
+    console.log(`Action ${action} for request ${requestId}`)
+  }
+
+}
+
 
 </script>
-<template>
-<div class="bg-custom">
-    <div class="card">
-        <div class="card-body">
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th class="col checkbox"><input type="checkbox" id="selectAll"></th>
-                        <th scope="col" class="id">Id</th>
-                        <th scope="col" class="username">Username</th>
-                        <th scope="col" class="designation">Tittle Request</th>
-                        <th scope="col" class="status">Status</th>
-                        <th scope="col" class="action">Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr style="height:70px">
-                        <td class="col-auto"><input type="checkbox" id="select1"></td>
-                        <td class="id">01</td>
-                        <td class="username">
-                            <img src="https://svgshare.com/i/16Gq.svg" alt="Avatar" class="user-avatar">
-                            Jenny Wilson
-                        </td>
-                        <td class="designation">Others</td>
-                        <td class="status">
-                            <button class="btn btn status-button bu">Active</button>
-                        </td>
-                        <td class="action">
-                            <div class="dropdown">
-                                <button class="btn btn-white dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-three-dots-vertical" viewBox="0 0 16 16">
-                                    <path d="M8 12a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm0-5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm0-5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3z"/>
-                                </svg>
-                            </button>
-                                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-                                    <li><a class="dropdown-item" href="#">Edit</a></li>
-                                    <li><a class="dropdown-item" href="#">Delete</a></li>
-                                    <li><a class="dropdown-item" href="#">Closed</a></li>
-                                </ul>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr style="height:70px">
-                        <td class="col-auto"><input type="checkbox" id="select2"></td>
-                        <td class="col-auto">02</td>
-                        <td class="username">
-                            <img src="https://svgshare.com/i/16Gq.svg" alt="Avatar" class="user-avatar">
-                                Jenny Wilson
-                        </td>
-                        <td class="designation">Anxiety</td>
-                        <td class="status">
-                            <button class="btn btn status-button bu2">Active</button>
-                        </td>
-                        <td class="action">
-                            <div class="dropdown">
-                                <button class="btn btn-white dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-three-dots-vertical" viewBox="0 0 16 16">
-                                        <path d="M8 12a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm0-5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm0-5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3z"/>
-                                    </svg>
-                                </button>
-                                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-                                    <li><a class="dropdown-item" href="#">Edit</a></li>
-                                    <li><a class="dropdown-item" href="#">Delete</a></li>
-                                    <li><a class="dropdown-item" href="#">Closed</a></li>
-                                </ul>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr style="height:70px">
-                        <td class="col-auto"><input type="checkbox" id="select3"></td>
-                        <td class="col-auto">03</td>
-                        <td class="username">
-                            <img src="https://svgshare.com/i/16Gq.svg" alt="Avatar" class="user-avatar">
-                                Jenny Wilson
-                        </td>
-                        <td class="designation">Stress</td>
-                        <td class="status">
-                            <button class="btn btn status-button bu3">Active</button>
-                        </td>
-                        <td class="action">
-                            <div class="dropdown">
-                                <button class="btn btn-white dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-three-dots-vertical" viewBox="0 0 16 16">
-                                        <path d="M8 12a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm0-5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm0-5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3z"/>
-                                    </svg>
-                                </button>
-                                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-                                    <li><a class="dropdown-item" href="#">Edit</a></li>
-                                    <li><a class="dropdown-item" href="#">Delete</a></li>
-                                    <li><a class="dropdown-item" href="#">Closed</a></li>
-                                </ul>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr style="height:70px">
-                        <td class="col-auto"><input type="checkbox" id="select4"></td>
-                        <td class="col-auto">04</td>
-                        <td class="username">
-                            <img src="https://svgshare.com/i/16Gq.svg" alt="Avatar" class="user-avatar">
-                                Jenny Wilson
-                        </td>
-                        <td class="designation">Others</td>
-                        <td class="status">
-                            <button class="btn btn status-button bu4">Closed</button>
-                        </td>
-                        <td class="action">
-                            <div class="dropdown">
-                                <button class="btn btn-white dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-three-dots-vertical" viewBox="0 0 16 16">
-                                        <path d="M8 12a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm0-5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm0-5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3z"/>
-                                    </svg>
-                                </button>
-                                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-                                    <li><a class="dropdown-item" href="#">Edit</a></li>
-                                    <li><a class="dropdown-item" href="#">Delete</a></li>
-                                    <li><a class="dropdown-item" href="#">Closed</a></li>
-                                </ul>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr style="height:70px">
-                        <td class="col-auto" style="border-bottom: none;"><input type="checkbox" id="select5"></td>
-                        <td class="col-auto" style="border-bottom: none;">05</td>
-                        <td class="username" style="border-bottom: none;">
-                            <img src="https://svgshare.com/i/16Gq.svg" alt="Avatar" class="user-avatar">
-                                Jenny Wilson
-                        </td>
-                        <td class="designation" style="border-bottom: none;">Anxiety</td>
-                        <td class="status" style="border-bottom: none;">
-                            <button class="btn btn status-button bu5">Closed</button>
-                        </td>
-                        <td class="action" style="border-bottom: none;">
-                            <div class="dropdown">
-                                <button class="btn btn-white dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-three-dots-vertical" viewBox="0 0 16 16">
-                                        <path d="M8 12a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm0-5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm0-5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3z"/>
-                                    </svg>
-                                </button>
-                                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-                                    <li><a class="dropdown-item" href="#">Edit</a></li>
-                                    <li><a class="dropdown-item" href="#">Delete</a></li>
-                                    <li><a class="dropdown-item" href="#">Closed</a></li>
-                                </ul>
-                            </div>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-</div>
 
+<template>
+  <div class="bg-custom">
+    <div class="card">
+      <div class="card-body">
+        <table class="table">
+          <thead>
+            <tr>
+              <th class="col checkbox">
+                <input type="checkbox" id="selectAll" v-model="selectAll" @change="toggleAllSelection">
+              </th>
+              <th scope="col" class="id">Id</th>
+              <th scope="col" class="username">Username</th>
+              <th scope="col" class="designation">Title Request</th>
+              <th scope="col" class="status">Status</th>
+              <th scope="col" class="action">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="request in requests" :key="request.id" style="height:70px">
+              <td class="col-auto">
+                <input type="checkbox" :id="'select' + request.id" 
+                       :checked="isSelected(request.id)" 
+                       @change="selectAll = false; $event.target.checked ? selectedRequestIds.push(request.id) : selectedRequestIds.splice(selectedRequestIds.indexOf(request.id), 1)">
+              </td>
+              <td class="id">{{ request.id }}</td>
+              <td class="username">
+                <img src="https://svgshare.com/i/16Gq.svg" alt="Avatar" class="user-avatar">
+                {{ request.firstName }} {{ request.lastName }}
+              </td>
+              <td class="designation">{{ request.titleRequest }}</td>
+              <td class="status">
+                <button class="btn btn status-button" :class="getStatusClass(request.status)">
+                  {{ request.status }}
+                </button>
+              </td>
+              <td class="action">
+                <div class="dropdown">
+                  <button class="btn btn-white dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-three-dots-vertical" viewBox="0 0 16 16">
+                      <path d="M8 12a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm0-5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm0-5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3z"/>
+                    </svg>
+                  </button>
+                  <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                    <li><a class="dropdown-item" href="#" @click="handleAction('edit', request, $event)">Edit</a></li>
+                    <li><a class="dropdown-item" href="#" @click="handleAction('delete', request, $event)">Delete</a></li>
+                    <li><a class="dropdown-item" href="#" @click="handleAction('close', request, $event)">Close</a></li>
+                  </ul>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
 </template>
+
+
+
+
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap');
 
